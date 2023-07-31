@@ -18,8 +18,8 @@ reverse
 
 
 class LinkedList {
-    head;
-    tail;
+    head = null;
+    tail = null;
     constructor(value){
         const newNode = new Node(value);
         this.head = newNode;
@@ -85,6 +85,7 @@ class LinkedList {
             } else {
                 this.head = this.head.next;
             }
+            return this.head;
         }
         let temp = this.head;
         while(temp){
@@ -97,8 +98,37 @@ class LinkedList {
         return 'Node not found'
     }
 
+    recurse(prev, temp){
+        if(!temp){
+            return;
+        }
+       this.recurse(temp, temp.next);
+        temp.next = prev;
+        return temp;
+    }
+
+    reverse(){
+        if(!this.head || !this.head.next){
+            return this.head;
+        }
+        let temp = this.head;
+        let temp2 = this.recurse(temp, temp)
+        temp2.next = null;
+        this.head = this.tail;
+        this.tail = temp2;
+    }
+
 
 }
 
 
-const llist = new LinkedList(2);
+let llist = new LinkedList(1);
+llist.push(2);
+llist.push(3);
+llist.push(4);
+llist.push(5);
+llist.push(6);
+console.log(JSON.stringify(llist))
+// llist.reverse();
+llist.remove(1)
+console.log(JSON.stringify(llist))
