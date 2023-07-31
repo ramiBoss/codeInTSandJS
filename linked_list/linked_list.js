@@ -74,6 +74,29 @@ class LinkedList {
         }
     }
 
+    remove(value){
+        if(!this.head){
+            return 'underflow'
+        }
+        if(this.head.value === value){
+            if(this.head.next === null){
+                this.head = null;
+                this.tail = null;
+            } else {
+                this.head = this.head.next;
+            }
+        }
+        let temp = this.head;
+        while(temp){
+            if(temp.next.value === value){
+                temp.next = temp.next.next;
+                return this.head;
+            }
+            temp = temp.next;
+        }
+        return 'Node not found'
+    }
+
 
 }
 
