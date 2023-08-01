@@ -9,6 +9,7 @@ class Node {
 
 /*
 linked list operations
+printList
 push
 pop
 insert
@@ -24,6 +25,15 @@ class LinkedList {
         const newNode = new Node(value);
         this.head = newNode;
         this.tail = newNode;
+    }
+
+    printList(){
+        const temp = this.head;
+        while(!temp){
+            console.log(temp.value);
+            temp = temp.next;
+        }
+        return this.head;
     }
 
     push(value){
@@ -116,6 +126,20 @@ class LinkedList {
         temp2.next = null;
         this.head = this.tail;
         this.tail = temp2;
+    }
+
+    findMiddle(){
+        if(!this.head ||!this.head.next){
+            return this.head;
+        }
+        const temp = this.head;
+        const temp2 = this.head.next;
+        while(!temp2.next){
+            temp = temp.next;
+            temp2 = temp2.next;
+        }
+        return temp;
+
     }
 
 
