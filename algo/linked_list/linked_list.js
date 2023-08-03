@@ -139,7 +139,22 @@ class LinkedList {
             temp2 = temp2.next;
         }
         return temp;
+    }
 
+    nToTheLast(n){
+        if(!this.head || !this.head.next){
+            return this.head;
+        }
+        const temp = this.head;
+        const temp2 = this.head;
+        n--;
+        while(!temp2.next && n > 0){
+            temp2 = temp2.next;
+            n--;
+        }
+        if(n > 0){
+            return 'n greater than the list length'
+        }
     }
 
 
