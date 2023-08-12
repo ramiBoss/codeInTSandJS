@@ -1,4 +1,4 @@
-var plusOne = function(digits){
+const plusOne = (digits) => {
     let j = digits.length-1;
     while(j >=0){
         digits[j] = digits[j] + 1 == 10 ? 0 : digits[j] + 1;

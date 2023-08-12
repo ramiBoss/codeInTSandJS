@@ -1,6 +1,6 @@
 // Longest substring without repeating
 
-var lengthOfLongestSubstring = function(s){
+const lengthOfLongestSubstring = (s) => {
     let max = 0;
     let set = new Set();
     for(let i = 0; i < s.length-max; i++){
