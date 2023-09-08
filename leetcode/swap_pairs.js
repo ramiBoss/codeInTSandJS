@@ -6,10 +6,16 @@ const swapPairs = (head) => {
 }
 
 const swapRecurse = (firstNode, secondNode) => {
-    if(secondNode === null){
+    if(firstNode === null){
         return null;
     }
-    const previousHead = swapRecurse(secondNode.next, secondNode.next.next);
+    if(secondNode === null){
+        return firstNode;
+    }
+    let previousHead = null;
+    if(secondNode.next !== null){
+       previousHead = swapRecurse(secondNode.next, secondNode.next.next);
+    }
     firstNode.next = previousHead;
     secondNode.next = firstNode;
     return secondNode
