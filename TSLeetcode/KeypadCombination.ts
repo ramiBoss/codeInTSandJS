@@ -3,7 +3,7 @@
  * Indices 0 and 1 are intentionally empty as typical phone keypads
  * do not map letters to 0 or 1.
  */
-const keypad = [
+const keypad: string[] = [
     '',      // 0
     '',      // 1
     'abc',   // 2
@@ -23,7 +23,7 @@ const keypad = [
  * Time Complexity: O(4^N * N)
  * - N is the number of digits in the input string.
  * - 4 represents the maximum number of letters a digit can map to (e.g., '7' maps to 'pqrs').
- * - The `* N` factor comes from string concatenation (`strSet + char`) in each recursive call,
+ * - The `* N` factor comes from string concatenation (`currentCombination + char`) in each recursive call,
  * which creates a new string of length up to N.
  * Space Complexity: O(N) for recursion stack depth and O(4^N * N) for storing the results.
  *
@@ -31,7 +31,7 @@ const keypad = [
  * @returns {string[]} An array of all possible letter combinations.
  * Returns an empty array if the input `digits` string is empty.
  */
-const phoneCombinations = (digits) => {
+const phoneCombinations = (digits: string): string[] => {
     // Handle the base case where no digits are provided.
     // An empty input string results in an empty list of combinations.
     if (digits.length === 0) {
@@ -39,7 +39,7 @@ const phoneCombinations = (digits) => {
     }
 
     // `resultCombinations` will store all the generated valid letter combinations.
-    const resultCombinations = [];
+    const resultCombinations: string[] = [];
 
     // Start the recursive backtracking process.
     // - `currentCombination`: The combination string built so far (initially empty).
@@ -60,7 +60,12 @@ const phoneCombinations = (digits) => {
  * @param {string} digits - The original input string of digits.
  * @param {string[]} resultCombinations - The array to store all the valid combinations found.
  */
-const combinationRecurse = (currentCombination, digitIndex, digits, resultCombinations) => {
+const combinationRecurse = (
+    currentCombination: string,
+    digitIndex: number,
+    digits: string,
+    resultCombinations: string[]
+): void => { // Return type is void as it modifies `resultCombinations` directly
     // Base Case: If we have processed all digits in the input string,
     // it means a complete letter combination has been formed.
     if (digitIndex === digits.length) {
@@ -70,10 +75,10 @@ const combinationRecurse = (currentCombination, digitIndex, digits, resultCombin
 
     // Get the numeric value of the current digit.
     // Using `parseInt` for explicit conversion, although `keypad[digits[digitIndex]]` often works implicitly.
-    const digit = parseInt(digits[digitIndex], 10);
+    const digit: number = parseInt(digits[digitIndex], 10);
 
     // Retrieve the string of characters mapped to the current digit from the `keypad`.
-    const charsForDigit = keypad[digit];
+    const charsForDigit: string = keypad[digit];
 
     // Iterate through each character available for the current digit.
     // For each character, make a recursive call to explore that path.
@@ -89,35 +94,26 @@ const combinationRecurse = (currentCombination, digitIndex, digits, resultCombin
 
 // --- Test Cases ---
 console.log("Test Case 1: '2345'");
-const test1 = '2345';
+const test1: string = '2345';
 console.log("Input:", test1);
 console.log("Output:", phoneCombinations(test1));
-/* Expected for '23':
-["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
-For '2345', it will be a much larger list.
-*/
 
 console.log("\nTest Case 2: '' (Empty string)");
-const test2 = '';
+const test2: string = '';
 console.log("Input:", test2);
-console.log("Output:", phoneCombinations(test2)); // Expected: []
+console.log("Output:", phoneCombinations(test2));
 
 console.log("\nTest Case 3: '2'");
-const test3 = '2';
+const test3: string = '2';
 console.log("Input:", test3);
-console.log("Output:", phoneCombinations(test3)); // Expected: ["a", "b", "c"]
+console.log("Output:", phoneCombinations(test3));
 
 console.log("\nTest Case 4: '7'");
-const test4 = '7'; // 'pqrs'
+const test4: string = '7';
 console.log("Input:", test4);
-console.log("Output:", phoneCombinations(test4)); // Expected: ["p", "q", "r", "s"]
+console.log("Output:", phoneCombinations(test4));
 
 console.log("\nTest Case 5: '29'");
-const test5 = '29'; // 'abc' and 'wxyz'
+const test5: string = '29';
 console.log("Input:", test5);
 console.log("Output:", phoneCombinations(test5));
-/* Expected:
-["aw", "ax", "ay", "az",
- "bw", "bx", "by", "bz",
- "cw", "cx", "cy", "cz"]
-*/
