@@ -3,20 +3,6 @@
  * @description Represents a record of one or more books borrowed by a specific user.
  * It tracks the borrowing and return dates and can calculate charges.
  *
- * Commentary:
- * The current `Receipt` class design is a bit unusual. Typically, a receipt
- * or "borrowing record" would be created for each *transaction* (e.g., when a user
- * borrows one or more books at a specific time). The `Receipt` being created
- * with a single `book` in the constructor and then `addAnotherBook` suggests
- * a user might borrow multiple books at the same time and have them all on one
- * "receipt" (or borrowing record).
- *
- * If a user borrows books at different times, they would likely have multiple
- * `Receipt` instances (or more appropriately, `BorrowingRecord` instances).
- *
- * Consider renaming `Receipt` to `BorrowingTransaction` or `LoanRecord` for clarity.
- * Also, the `userId` implies a `User` class could exist, which would be a good
- * addition for a more complete system.
  */
 class Receipt {
     // Private array to hold all books associated with this single borrowing transaction.

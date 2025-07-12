@@ -2,13 +2,6 @@
  * @class Library
  * @description Manages the collection of books and facilitates borrowing/returning operations.
  * It acts as the central hub for interacting with the library system.
- *
- * Commentary:
- * For a more robust system, consider adding:
- * - A collection of `User` objects to manage user information (e.g., name, ID, borrowed books history).
- * - A collection of `Receipt` (or `BorrowingTransaction`) objects to track all historical and active loans.
- * Currently, the `Library` class directly manages book assignments but doesn't store these transactions.
- * This means you can't easily query "What books does User X currently have?" or "What was the borrowing history for Book Y?".
  */
 class Library {
     // Private array to hold all `Book` objects available in the library.
