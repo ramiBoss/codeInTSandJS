@@ -1,0 +1,41 @@
+# Site settings
+title: "Code in TypeScript and JavaScript"
+description: "A comprehensive collection of algorithms, data structures, and coding problem solutions"
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# GitHub Pages settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Navigation
+header_pages:
+  - algorithms.md
+  - data-structures.md
+  - problems.md
+  - contributing.md
+
+# Social links (optional)
+github_username: yourusername
+
+# SEO settings
+author: "Your Name"
+twitter:
+  username: yourtwitterhandle # optional
+  card: summary
+
+# Exclude files from build
+exclude:
+  - node_modules/
+  - package*.json
+  - "*.log"
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
