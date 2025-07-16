@@ -94,4 +94,4 @@ library.getActiveReceipts().forEach(receipt => {
 });
 
 console.log("\n--- User Borrowing History for user001 ---");
-library.getBorrowingHistoryForUser(userId).forEach(receipt => console.log(receipt.getReceiptDetails()));
+library.getBorrowingHistoryForUser(userId).forEach((receipt: Receipt) => console.log(receipt.getReceiptDetails()));
