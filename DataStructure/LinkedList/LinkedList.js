@@ -47,6 +47,21 @@ class LinkedList {
      * Traverses the list from head to tail and prints the values of each node.
      * @returns {void}
      */
+    /**
+     * Traverses the list from head to tail and prints the values of each node.
+     * 
+     * Pseudo code:
+     * 1. If list is empty (head is null)
+     *    - Print "List is empty" and return
+     * 2. Create temp pointer starting at head
+     * 3. Create empty array for values
+     * 4. While temp is not null
+     *    - Add temp's value to array
+     *    - Move temp to next node
+     * 5. Join array with " -> " and print result
+     * 
+     * @returns {void}
+     */
     printList(){
         if (!this.head) { // Handle empty list case
             console.log("List is empty.");
@@ -269,6 +284,210 @@ class LinkedList {
             p2 = p2.next;
         }
         return p1; // p1 will be at the Nth node from the end
+    }
+
+    // Detect cycles in the linked list using Floyd's Cycle Detection Algorithm
+    hasCycle() {
+        if (!this.head) return false; // Empty list has no cycle
+
+        let slow = this.head; // Slow pointer
+        let fast = this.head; // Fast pointer
+
+        while (fast && fast.next) {
+            slow = slow.next;          // Move slow by 1 step
+            fast = fast.next.next;    // Move fast by 2 steps
+
+            if (slow === fast) {      // If they meet, there's a cycle
+                return true;
+            }
+        }
+        return false; // No cycle found
+    }
+
+    // Find the start of the cycle if it exists
+    findCycleStart() {
+        if (!this.hasCycle()) return null; // No cycle, so no start
+
+        let slow = this.head; // Start from head
+        let fast = this.head; // Start from head
+
+        // Move fast pointer to meet slow pointer
+        do {
+            slow = slow.next;
+            fast = fast.next.next;
+        } while (slow !== fast);
+
+        // Reset one pointer to head and move both pointers one step at a time
+        slow = this.head;
+        while (slow !== fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow; // The node where the cycle starts
+    }
+    
+    // Remove duplicates from a sorted linked list
+    removeDuplicates() {
+        if (!this.head) return; // Empty list has no duplicates 
+        let current = this.head; // Start from head
+        while (current && current.next) {
+            if (current.value === current.next.value) { // If current and next are the same
+                current.next = current.next.next; // Skip the next node
+                this.length--; // Decrement length
+            } else {
+                current = current.next; // Move to the next node
+            }
+        }
+        this.tail = current; // Update tail to the last unique node
+    }
+
+    // Merge two sorted linked lists
+    static mergeSortedLists(list1, list2) {
+        let dummy = new Node(0); // Dummy node to simplify merging
+        let tail = dummy; // Pointer to the last node in the merged list
+        
+        let p1 = list1.head;
+        let p2 = list2.head;
+        while (p1 && p2) {
+            if (p1.value < p2.value) {
+                tail.next = p1; // Link to the smaller node
+                p1 = p1.next;   // Move p1 to the next node
+            } else {
+                tail.next = p2; // Link to the smaller node
+                p2 = p2.next;   // Move p2 to the next node
+            }
+            tail = tail.next; // Move tail to the last node in merged list
+        }
+        
+        // If any nodes left in either list, link them
+        if (p1) {
+            tail.next = p1;
+        } else if (p2) {
+            tail.next = p2;
+        }
+        
+        return new LinkedList(dummy.next); // Return new list starting from dummy's next
+    }
+
+    // Convert the linked list to an array for easier testing and visualization
+    toArray() {
+        const result = [];
+        let current = this.head;
+        while (current) {
+            result.push(current.value);
+            current = current.next;
+        }
+        return result; // Return the array representation of the list
+    }
+
+    // Clone a linked list with arbitrary/random pointers.
+    clone() {
+        if (!this.head) return null; // Handle empty list
+
+        const map = new Map(); // Map to hold original nodes and their clones
+        let current = this.head;
+
+        // First pass: create all nodes and store them in the map
+        while (current) {
+            map.set(current, new Node(current.value));
+            current = current.next;
+        }
+
+        // Second pass: set next pointers for cloned nodes
+        current = this.head;
+        while (current) {
+            const cloneNode = map.get(current);
+            cloneNode.next = map.get(current.next) || null; // Set next pointer
+            current = current.next;
+        }
+
+        return new LinkedList(map.get(this.head).value); // Return new list with cloned head
+    }
+
+    // Merge k sorted linked lists
+    /**
+     * Merges k sorted linked lists into a single sorted linked list.
+     * Uses a min-heap approach for efficient merging.
+     * 
+     * Pseudo code:
+     * 1. If input is empty or null, return null
+     * 2. Initialize empty min-heap
+     * 3. Add head nodes of all non-empty lists to min-heap
+     * 4. Create dummy node for result list
+     * 5. While min-heap is not empty:
+     *    a. Extract min node from heap
+     *    b. Add node to result list
+     *    c. If extracted node has next node
+     *       - Add next node to heap
+     *    d. Maintain heap property
+     * 6. Return new linked list starting from dummy's next
+     * 
+     * Time complexity: O(N * log k) where N is total nodes, k is number of lists
+     * Space complexity: O(k) for the heap
+     * 
+     * @param {LinkedList[]} lists - Array of sorted linked lists to merge
+     * @returns {LinkedList} Merged sorted linked list
+     */
+    static mergeKLists(lists) {
+        if (!lists || lists.length === 0) return null; // Handle empty input
+
+        const minHeap = []; // Min-heap to store the head nodes of each list
+
+        // Initialize the heap with the head of each list
+        for (const list of lists) {
+            if (list.head) {
+                minHeap.push(list.head);
+            }
+        }
+
+        // Create a dummy node to simplify merging
+        const dummy = new Node(0);
+        let tail = dummy;
+
+        // Function to maintain the min-heap property
+        const heapify = (arr, index) => {
+            let smallest = index;
+            const left = 2 * index + 1;
+            const right = 2 * index + 2;
+
+            if (left < arr.length && arr[left].value < arr[smallest].value) {
+                smallest = left;
+            }
+            if (right < arr.length && arr[right].value < arr[smallest].value) {
+                smallest = right;
+            }
+            if (smallest !== index) {
+                [arr[index], arr[smallest]] = [arr[smallest], arr[index]]; // Swap
+                heapify(arr, smallest); // Recursively heapify the affected subtree
+            }
+        };
+
+        // Build the initial min-heap
+        for (let i = Math.floor(minHeap.length / 2) - 1; i >= 0; i--) {
+            heapify(minHeap, i);
+        }
+
+        // Merge the lists
+        while (minHeap.length > 0) {
+            const minNode = minHeap[0]; // Get the smallest node
+            tail.next = minNode; // Link it to the merged list
+            tail = tail.next; // Move tail to the last node
+
+            // If there's a next node, add it to the heap
+            if (minNode.next) {
+                minHeap[0] = minNode.next; // Replace the root with the next node
+            } else {
+                let lastElement = minHeap.pop(); // Remove the last element if no next
+                if (minHeap.length > 0) {
+                    minHeap[0] = lastElement; // Replace root with last element
+                }
+            }
+            if(minHeap.length > 0) {
+                heapify(minHeap, 0); // Restore the heap property
+            }
+        }
+
+        return new LinkedList(dummy.next ? dummy.next.value : null); // Return new list starting from dummy's next
     }
 }
 
