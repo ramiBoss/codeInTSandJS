@@ -25,22 +25,22 @@ class Queue {
 }
 
 const BFS = (startNode: BFSNode) => {
-    const queue = new Queue(); // Or a built-in Array acting as a queue
-    const visited = new Set<BFSNode>(); // Use a Set for O(1) average lookup
+    const queue = new Queue(); 
+    const visited = new Set<BFSNode>(); 
 
     queue.push(startNode);
-    visited.add(startNode); // Mark start node as visited immediately
+    visited.add(startNode); 
 
-    const traversalOrder: number[] = []; // To store the order of visited nodes
+    const traversalOrder: number[] = []; 
 
     while (!queue.isEmpty()) {
         const currentNode = queue.pop();
 
-        if (currentNode) { // Should always be true if queue is not empty
-            traversalOrder.push(currentNode.value); // Process the node
+        if (currentNode) { 
+            traversalOrder.push(currentNode.value); 
 
             for (const child of currentNode.children) {
-                if (!visited.has(child)) { // CRITICAL: Check if not visited before adding to queue
+                if (!visited.has(child)) { 
                     visited.add(child);
                     queue.push(child);
                 }

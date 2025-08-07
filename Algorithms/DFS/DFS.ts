@@ -13,7 +13,7 @@ const DFS = (node: TreeNode, visited: TreeNode[]): void => {
     }
     visited.push(node);
     
-    console.log(node.value); // Process the node (e.g., print its value)
+    console.log(node.value); 
     for(const child of node.children) {
         DFS(child, visited);
     }
@@ -25,7 +25,7 @@ const DFS2 = (node: TreeNode, visited: Set<TreeNode>): void => {
     }
     visited.add(node);
 
-    console.log(node.value); // Process the node (e.g., print its value)
+    console.log(node.value); 
     for(const child of node.children) {
         DFS2(child, visited);
     }
