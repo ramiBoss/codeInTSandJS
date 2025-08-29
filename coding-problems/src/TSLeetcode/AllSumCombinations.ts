@@ -22,7 +22,7 @@ const allSumCombinations = (target: number, numsPool: number[]) => {
         }
 
         for(let i = startIndex; i < numsPool.length; i++) {
-            const num = numsPool[i];
+            const num = numsPool[i] as number;
             if(num <= remTarget) {
                 currentCombination.push(num);
                 findCombinations(remTarget - num, currentCombination, i);
