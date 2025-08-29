@@ -36,8 +36,12 @@ export class MaxHeap<T> {
         let index = this.heap.length - 1;
         while (index > 0) {
             const parentIndex = Math.floor((index - 1) / 2);
-            if (this.compare(this.heap[index], this.heap[parentIndex]) > 0) {
-                [this.heap[index], this.heap[parentIndex]] = [this.heap[parentIndex], this.heap[index]];
+            const current = this.heap[index];
+            const parent = this.heap[parentIndex];
+            if (current !== undefined && parent !== undefined && this.compare(current, parent) > 0) {
+                const temp = this.heap[index] as T;
+                this.heap[index] = this.heap[parentIndex] as T;
+                this.heap[parentIndex] = temp;
                 index = parentIndex;
             } else {
                 break;
@@ -52,15 +56,19 @@ export class MaxHeap<T> {
             const rightChildIndex = 2 * index + 2;
             let largestIndex = index;
 
-            if (leftChildIndex < length && this.compare(this.heap[leftChildIndex], this.heap[largestIndex]) > 0) {
+            const leftChild = this.heap[leftChildIndex];
+            const largest = this.heap[largestIndex];
+            const rightChild = this.heap[rightChildIndex];
+
+            if (leftChildIndex < length && leftChild !== undefined && largest !== undefined && this.compare(leftChild, largest) > 0) {
                 largestIndex = leftChildIndex;
             }
-            if (rightChildIndex < length && this.compare(this.heap[rightChildIndex], this.heap[largestIndex]) > 0) {
+            if (rightChildIndex < length && rightChild !== undefined && largest !== undefined && this.compare(rightChild, largest) > 0) {
                 largestIndex = rightChildIndex;
             }
             if (largestIndex === index) break;
 
-            [this.heap[index], this.heap[largestIndex]] = [this.heap[largestIndex], this.heap[index]];
+            [this.heap[index], this.heap[largestIndex]] = [this.heap[largestIndex] as T, this.heap[index] as T];
             index = largestIndex;
         }
     }
