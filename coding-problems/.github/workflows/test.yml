@@ -1,0 +1,48 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: coding-problems/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./coding-problems
+      run: npm ci
+    
+    - name: Run linter
+      working-directory: ./coding-problems
+      run: npm run lint
+    
+    - name: Run tests
+      working-directory: ./coding-problems
+      run: npm test
+    
+    - name: Run tests with coverage
+      working-directory: ./coding-problems
+      run: npm run test:coverage
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./coding-problems/coverage
+        flags: unittests
+        name: codecov-umbrella

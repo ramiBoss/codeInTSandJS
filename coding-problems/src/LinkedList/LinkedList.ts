@@ -2,15 +2,15 @@
  * Represents a Node in a Singly Linked List.
  * Each node holds a value and a reference to the next node.
  */
-class Node {
-    value; // The data stored in the node.
-    next;  // Reference to the next node in the list.
+export class Node {
+    value: any; // The data stored in the node.
+    next: Node | null;  // Reference to the next node in the list.
 
     /**
      * Creates a new Node.
      * @param {*} value - The value to be stored in the node.
      */
-    constructor(value){
+    constructor(value: number){
         this.value = value;
         this.next = null; // Initially, no next node.
     }
@@ -20,9 +20,9 @@ class Node {
  * Represents a Singly Linked List.
  * It manages operations like adding, removing, inserting, and reversing nodes.
  */
-class LinkedList {
-    head = null; // The first node in the list.
-    tail = null; // The last node in the list.
+export class LinkedList {
+    head: Node | null = null; // The first node in the list.
+    tail: Node | null = null; // The last node in the list.
     length = 0;  // The number of nodes in the list.
 
     /**
@@ -30,17 +30,11 @@ class LinkedList {
      * If an initial value is provided, the list starts with one node.
      * @param {*} [value] - The initial value for the head node.
      */
-    constructor(value){
-        if (value === undefined) {
-            this.head = null;
-            this.tail = null;
-            this.length = 0;
-        } else {
-            const newNode = new Node(value);
-            this.head = newNode;
-            this.tail = newNode;
-            this.length = 1;
-        }
+    constructor(value: number){
+        const newNode = new Node(value);
+        this.head = newNode;
+        this.tail = newNode;
+        this.length = 1;   
     }
 
     /**
@@ -67,7 +61,7 @@ class LinkedList {
             console.log("List is empty.");
             return;
         }
-        let temp = this.head; // Start from the head
+        let temp: Node | null = this.head; // Start from the head
         const result = [];    // Array to store values for printing
         while(temp){ // Loop until the end of the list
             result.push(temp.value);
@@ -82,12 +76,12 @@ class LinkedList {
      * @param {*} value - The value to be added.
      * @returns {LinkedList} The current LinkedList instance for chaining.
      */
-    push(value){
+    push(value: number): LinkedList {
         const newNode = new Node(value);
         if(!this.head){ // If the list is empty
             this.head = newNode;
             this.tail = newNode;
-        } else {
+        } else if(this.tail) {
             this.tail.next = newNode; // Link current tail's next to new node
             this.tail = newNode;       // Update tail to new node
         }
@@ -132,7 +126,7 @@ class LinkedList {
      * @param {number} index - The 0-based index at which to insert.
      * @returns {boolean} True if insertion was successful, false otherwise.
      */
-    insert(value, index){
+    insert(value: number, index: number): boolean {
         // Handle invalid index
         if (index < 0 || index > this.length) {
             console.error("Error: Index out of bounds.");
@@ -159,11 +153,13 @@ class LinkedList {
 
         // For insertion in the middle
         const newNode = new Node(value);
-        let temp = this.head;
+        if (!this.head) return false;
+        let temp: Node | null = this.head;
         // Traverse to the node *before* the insertion point
         for (let i = 0; i < index - 1; i++) {
-            temp = temp.next;
+            if (temp) temp = temp.next;
         }
+        if (!temp) return false;  // Safety check in case temp became null
         newNode.next = temp.next; // New node points to the node 'temp' was pointing to
         temp.next = newNode;      // 'temp' now points to the new node
         this.length++;            // Increment the length
@@ -175,7 +171,7 @@ class LinkedList {
      * @param {*} value - The value of the node to remove.
      * @returns {Node | string} The removed node, or a string if the node is not found or list is empty.
      */
-    remove(value){
+    remove(value: number): Node | string {
         if(!this.head){ // If the list is empty
             return 'underflow';
         }
@@ -220,12 +216,12 @@ class LinkedList {
             return this;
         }
 
-        let prev = null;      // Will store the previous node
-        let current = this.head; // Start with the head
+        let prev: Node | null = null;      // Will store the previous node
+        let current: Node | null = this.head; // Start with the head
         this.tail = this.head; // The original head will become the new tail
 
         while(current){
-            const nextNode = current.next; // Store the next node before modifying current.next
+            const nextNode: Node | null = current.next; // Store the next node before modifying current.next
             current.next = prev;           // Reverse the current node's pointer
             prev = current;                // Move 'prev' to current node
             current = nextNode;            // Move 'current' to the next node
@@ -243,11 +239,11 @@ class LinkedList {
         if(!this.head){ // Handle empty list
             return null;
         }
-        let slow = this.head; // Slow pointer moves one step at a time
-        let fast = this.head; // Fast pointer moves two steps at a time
+        let slow: Node | null = this.head; // Slow pointer moves one step at a time
+        let fast: Node | null = this.head; // Fast pointer moves two steps at a time
 
         while(fast !== null && fast.next !== null){ // Loop until fast reaches end
-            slow = slow.next;      // Move slow pointer one step
+            slow = slow?.next ??  null;      // Move slow pointer one step
             fast = fast.next.next; // Move fast pointer two steps
         }
         return slow; // When fast reaches the end, slow is at the middle
@@ -259,7 +255,7 @@ class LinkedList {
      * @param {number} n - The position from the end (1-based).
      * @returns {Node | string | null} The Nth node from the end, an error string, or null if the list is empty.
      */
-    nToTheLast(n){
+    nToTheLast(n: number): Node | string | null {
         if(!this.head){ // Handle empty list
             return null;
         }
@@ -267,8 +263,8 @@ class LinkedList {
             return 'Invalid value for n: must be greater than 0';
         }
 
-        let p1 = this.head; // First pointer
-        let p2 = this.head; // Second pointer
+        let p1: Node | null = this.head; // First pointer
+        let p2: Node | null = this.head; // Second pointer
 
         // Move p2 'n' steps ahead
         for(let i = 0; i < n; i++){
@@ -280,8 +276,8 @@ class LinkedList {
 
         // Now move both pointers until p2 reaches the end
         while(p2 !== null){
-            p1 = p1.next;
-            p2 = p2.next;
+            p1 = p1?.next ?? null;
+            p2 = p2?.next ?? null;
         }
         return p1; // p1 will be at the Nth node from the end
     }
@@ -290,12 +286,12 @@ class LinkedList {
     hasCycle() {
         if (!this.head) return false; // Empty list has no cycle
 
-        let slow = this.head; // Slow pointer
-        let fast = this.head; // Fast pointer
+        let slow: Node | null = this.head; // Slow pointer
+        let fast: Node | null = this.head; // Fast pointer
 
         while (fast && fast.next) {
-            slow = slow.next;          // Move slow by 1 step
-            fast = fast.next.next;    // Move fast by 2 steps
+            slow = slow?.next ?? null;          // Move slow by 1 step
+            fast = fast?.next?.next ?? null;    // Move fast by 2 steps
 
             if (slow === fast) {      // If they meet, there's a cycle
                 return true;
@@ -308,20 +304,20 @@ class LinkedList {
     findCycleStart() {
         if (!this.hasCycle()) return null; // No cycle, so no start
 
-        let slow = this.head; // Start from head
-        let fast = this.head; // Start from head
+        let slow: Node | null = this.head; // Start from head
+        let fast: Node | null = this.head; // Start from head
 
         // Move fast pointer to meet slow pointer
         do {
-            slow = slow.next;
-            fast = fast.next.next;
+            slow = slow?.next ?? null;
+            fast = fast?.next?.next ?? null;
         } while (slow !== fast);
 
         // Reset one pointer to head and move both pointers one step at a time
         slow = this.head;
         while (slow !== fast) {
-            slow = slow.next;
-            fast = fast.next;
+            slow = slow?.next ?? null;
+            fast = fast?.next ?? null;
         }
         return slow; // The node where the cycle starts
     }
@@ -342,7 +338,7 @@ class LinkedList {
     }
 
     // Merge two sorted linked lists
-    static mergeSortedLists(list1, list2) {
+    static mergeSortedLists(list1: LinkedList, list2: LinkedList): LinkedList {
         let dummy = new Node(0); // Dummy node to simplify merging
         let tail = dummy; // Pointer to the last node in the merged list
         
@@ -366,7 +362,7 @@ class LinkedList {
             tail.next = p2;
         }
         
-        return new LinkedList(dummy.next); // Return new list starting from dummy's next
+        return new LinkedList(dummy.next?.value); // Return new list starting from dummy's next
     }
 
     // Convert the linked list to an array for easier testing and visualization
@@ -385,7 +381,7 @@ class LinkedList {
         if (!this.head) return null; // Handle empty list
 
         const map = new Map(); // Map to hold original nodes and their clones
-        let current = this.head;
+        let current: Node | null= this.head;
 
         // First pass: create all nodes and store them in the map
         while (current) {
@@ -428,7 +424,7 @@ class LinkedList {
      * @param {LinkedList[]} lists - Array of sorted linked lists to merge
      * @returns {LinkedList} Merged sorted linked list
      */
-    static mergeKLists(lists) {
+    static mergeKLists(lists: LinkedList[]): LinkedList | null {
         if (!lists || lists.length === 0) return null; // Handle empty input
 
         const minHeap = []; // Min-heap to store the head nodes of each list
@@ -445,19 +441,21 @@ class LinkedList {
         let tail = dummy;
 
         // Function to maintain the min-heap property
-        const heapify = (arr, index) => {
+        const heapify = (arr: Node[], index: number): void => {
             let smallest = index;
             const left = 2 * index + 1;
             const right = 2 * index + 2;
 
-            if (left < arr.length && arr[left].value < arr[smallest].value) {
+            if (left < arr.length && arr[left] !== undefined && arr[smallest] !== undefined && arr[left]!.value < arr[smallest]!.value) {
                 smallest = left;
             }
-            if (right < arr.length && arr[right].value < arr[smallest].value) {
+            if (right < arr.length && arr[right] && arr[smallest] && arr[right].value < arr[smallest]!.value) {
                 smallest = right;
             }
             if (smallest !== index) {
-                [arr[index], arr[smallest]] = [arr[smallest], arr[index]]; // Swap
+                const temp = arr[index]!;
+                arr[index] = arr[smallest]!;
+                arr[smallest] = temp;
                 heapify(arr, smallest); // Recursively heapify the affected subtree
             }
         };
@@ -469,100 +467,26 @@ class LinkedList {
 
         // Merge the lists
         while (minHeap.length > 0) {
-            const minNode = minHeap[0]; // Get the smallest node
+            // @ts-ignore
+            const minNode = minHeap[0]!; // Get the smallest node with non-null assertion
             tail.next = minNode; // Link it to the merged list
+            // @ts-ignore
             tail = tail.next; // Move tail to the last node
 
             // If there's a next node, add it to the heap
             if (minNode.next) {
                 minHeap[0] = minNode.next; // Replace the root with the next node
             } else {
-                let lastElement = minHeap.pop(); // Remove the last element if no next
-                if (minHeap.length > 0) {
+                const lastElement = minHeap.pop();
+                if (minHeap.length > 0 && lastElement) {
                     minHeap[0] = lastElement; // Replace root with last element
                 }
             }
             if(minHeap.length > 0) {
-                heapify(minHeap, 0); // Restore the heap property
+                heapify(minHeap as Node[], 0); // Type assertion to Node[]
             }
         }
 
         return new LinkedList(dummy.next ? dummy.next.value : null); // Return new list starting from dummy's next
     }
 }
-
-// --- Example Usage ---
-console.log("--- Initializing and Pushing ---");
-let llist = new LinkedList(1);
-llist.push(2);
-llist.push(3);
-llist.push(4);
-llist.push(5);
-llist.push(6);
-llist.printList(); // Expected: Linked List: 1 -> 2 -> 3 -> 4 -> 5 -> 6
-console.log("List Length:", llist.length); // Expected: 6
-
-console.log("\n--- Popping a node ---");
-const popped = llist.pop();
-console.log("Popped node:", popped ? popped.value : 'undefined'); // Expected: 6
-llist.printList(); // Expected: Linked List: 1 -> 2 -> 3 -> 4 -> 5
-console.log("List Length:", llist.length); // Expected: 5
-
-console.log("\n--- Inserting a node ---");
-llist.insert(0, 0); // Insert at beginning
-llist.printList(); // Expected: Linked List: 0 -> 1 -> 2 -> 3 -> 4 -> 5
-console.log("List Length:", llist.length); // Expected: 6
-
-llist.insert(7, 6); // Insert at end
-llist.printList(); // Expected: Linked List: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 7
-console.log("List Length:", llist.length); // Expected: 7
-
-llist.insert(99, 3); // Insert in middle
-llist.printList(); // Expected: Linked List: 0 -> 1 -> 2 -> 99 -> 3 -> 4 -> 5 -> 7
-console.log("List Length:", llist.length); // Expected: 8
-
-console.log("\n--- Removing nodes ---");
-const removedHead = llist.remove(0); // Remove head
-console.log("Removed head:", removedHead ? removedHead.value : 'undefined'); // Expected: 0
-llist.printList(); // Expected: Linked List: 1 -> 2 -> 99 -> 3 -> 4 -> 5 -> 7
-console.log("List Length:", llist.length); // Expected: 7
-
-const removedMiddle = llist.remove(99); // Remove middle
-console.log("Removed middle:", removedMiddle ? removedMiddle.value : 'undefined'); // Expected: 99
-llist.printList(); // Expected: Linked List: 1 -> 2 -> 3 -> 4 -> 5 -> 7
-console.log("List Length:", llist.length); // Expected: 6
-
-const removedTail = llist.remove(7); // Remove tail
-console.log("Removed tail:", removedTail ? removedTail.value : 'undefined'); // Expected: 7
-llist.printList(); // Expected: Linked List: 1 -> 2 -> 3 -> 4 -> 5
-console.log("List Length:", llist.length); // Expected: 5
-
-console.log("\n--- Finding Middle ---");
-const middleNode = llist.findMiddle();
-console.log("Middle node value:", middleNode ? middleNode.value : 'null'); // Expected: 3
-
-llist.push(6); // Add another node to test even length
-llist.printList(); // Expected: Linked List: 1 -> 2 -> 3 -> 4 -> 5 -> 6
-console.log("List Length:", llist.length); // Expected: 6
-const middleNodeEven = llist.findMiddle();
-console.log("Middle node value (even length):", middleNodeEven ? middleNodeEven.value : 'null'); // Expected: 3 (first of two middle nodes)
-
-console.log("\n--- Finding Nth to the Last ---");
-const nthLast = llist.nToTheLast(2); // 2nd to last
-console.log("2nd to last node:", nthLast ? nthLast.value : 'not found'); // Expected: 5
-
-const nthLastTooBig = llist.nToTheLast(100); // N greater than length
-console.log("100th to last node:", nthLastTooBig); // Expected: n is greater than the list length
-
-const nthLastFirst = llist.nToTheLast(6); // 6th to last (i.e., the head)
-console.log("6th to last node (head):", nthLastFirst ? nthLastFirst.value : 'not found'); // Expected: 1
-
-console.log("\n--- Reversing the list ---");
-llist.printList(); // Current: Linked List: 1 -> 2 -> 3 -> 4 -> 5 -> 6
-llist.reverse();
-llist.printList(); // Expected: Linked List: 6 -> 5 -> 4 -> 3 -> 2 -> 1
-console.log("New Head:", llist.head.value); // Expected: 6
-console.log("New Tail:", llist.tail.value); // Expected: 1
-
-// Test with JSON.stringify for full structure (careful with circular references if not handled)
-// console.log(JSON.stringify(llist, null, 2));
