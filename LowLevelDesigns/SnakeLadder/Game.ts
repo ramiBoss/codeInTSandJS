@@ -1,3 +1,7 @@
+import { Board } from "./Board";
+import { Dice } from "./Dice";
+import { Player } from "./Player";
+
 /**
  * @enum {string} GameStatus
  * @description Enum for possible states of the game.

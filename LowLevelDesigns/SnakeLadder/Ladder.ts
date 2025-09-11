@@ -1,10 +1,12 @@
+import { SpecialEntity } from "./SpecialEntity";
+
 /**
  * @class Ladder
  * @extends SpecialEntity
  * @description Represents a Ladder on the game board. A ladder moves a player up the board.
  * Ensures that the end position is greater than the start position.
  */
-class Ladder extends SpecialEntity {
+export class Ladder extends SpecialEntity {
     /**
      * Creates an instance of Ladder.
      * @param {number} start - The starting cell of the ladder.

@@ -1,8 +1,10 @@
+import { SpecialEntity } from "./SpecialEntity";
+
 /**
  * @class Board
  * @description Represents the game board, managing its dimensions, cells, and special entities (snakes/ladders).
  */
-class Board {
+export class Board {
     /**
      * @property {number} dimension - The number of rows/columns (e.g., 10 for a 10x10 board).
      * @property {Map<number, SpecialEntity>} specialEntities - A map storing special entities (Snakes/Ladders)

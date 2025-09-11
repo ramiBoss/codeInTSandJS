@@ -2,7 +2,7 @@
  * @class Dice
  * @description Represents a standard dice used in the game.
  */
-class Dice {
+export class Dice {
     /**
      * @property {number} maxValue - The maximum value that can be rolled on the dice (e.g., 6 for a standard die).
      */

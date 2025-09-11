@@ -1,3 +1,5 @@
+import { SpecialEntity } from "./SpecialEntity";
+
 /**
  * @class Snake
  * @extends SpecialEntity

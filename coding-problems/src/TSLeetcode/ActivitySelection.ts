@@ -24,7 +24,7 @@
  * //   { start: 8, finish: 9 }
  * // ]
  */
-const ActivitySelection = (
+export const ActivitySelection = (
   startTimes: number[],
   finishTimes: number[]
 ): { start: number; finish: number }[] => {

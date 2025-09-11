@@ -2,7 +2,7 @@
  * @class Player
  * @description Represents a player in the game.
  */
-class Player {
+export class Player {
     /**
      * @property {string} name - The name of the player.
      * @property {number} position - The current cell number the player is on. Starts at 0 (before the board).

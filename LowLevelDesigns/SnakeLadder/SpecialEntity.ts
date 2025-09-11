@@ -4,7 +4,7 @@
  * @description Represents an abstract base class for special entities on the game board,
  * such as Snakes and Ladders. It defines common properties and an abstract method for getting an ID.
  */
-class SpecialEntity {
+export class SpecialEntity {
 
     public startPosition: number;
     public endPosition: number;

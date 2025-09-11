@@ -3,7 +3,7 @@
  *  i < j < k and nums[i] + nums[j] + nums[k] === 0.
  */
 
-const threeSum = (nums: number[]): number[][] => {
+export const threeSum = (nums: number[]): number[][] => {
     const result: number[][] = [];
     nums.sort((a, b) => a - b); // Sort the array to use two-pointer technique
 
@@ -30,6 +30,4 @@ const threeSum = (nums: number[]): number[][] => {
     }
     return result;
 };
-
-export default threeSum;
 

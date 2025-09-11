@@ -34,3 +34,5 @@ const allSumCombinations = (target: number, numsPool: number[]) => {
     findCombinations(target, [], 0);
     return result;
 }
+
+export { allSumCombinations };
