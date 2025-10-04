@@ -24,7 +24,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "../LowLevelDesigns/tic-tac-toe"  ],
   "exclude": [
     "node_modules",
     "dist",

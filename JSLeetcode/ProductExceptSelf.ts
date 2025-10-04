@@ -21,38 +21,3 @@ const productExceptSelf = (nums: number[]) => {
 	return result;
 	
 }
-
-
-
-
-enum Marker {
-	X='X',
-	O='O',
-	EMPTY='_'
-}
-
-
-class Player {
-	constructor(private name: string, private marker: Marker){};
-
-	getName(){
-		return this.name;
-	}
-
-	getMarker(){
-		return this.marker
-	}
-}
-
-class Cell {
-	constructor(private marker: Marker = Marker.EMPTY){};
-
-	setMarker(marker: Marker){
-		this.marker
-	}
-
-	getMarker(){
-		return this.marker
-	}
-
-}
