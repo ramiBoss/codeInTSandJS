@@ -1,0 +1,6 @@
+enum State {
+    IDLE = "IDLE",
+    HAS_MONEY = "HAS_MONEY",
+    DISPENSING = "DISPENSING",
+    OUT_OF_STOCK = "OUT_OF_STOCK"
+}

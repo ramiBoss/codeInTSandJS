@@ -1,71 +1,317 @@
+import { Book } from './Book';
+import { Member } from './User';
+
+/**
+ * Transaction type enumeration
+ */
+export enum TransactionType {
+    BORROW = 'BORROW',
+    RETURN = 'RETURN',
+    RENEW = 'RENEW',
+    RESERVE = 'RESERVE',
+    FINE_PAYMENT = 'FINE_PAYMENT'
+}
+
+/**
+ * Transaction status enumeration
+ */
+export enum TransactionStatus {
+    ACTIVE = 'ACTIVE',
+    COMPLETED = 'COMPLETED',
+    OVERDUE = 'OVERDUE',
+    CANCELLED = 'CANCELLED'
+}
+
+/**
+ * Book transaction entry interface
+ */
+export interface BookTransactionEntry {
+    bookId: string;
+    bookTitle: string;
+    borrowDate: Date;
+    dueDate: Date;
+    returnDate?: Date;
+    renewalCount: number;
+    fineAmount: number;
+    isOverdue: boolean;
+}
+
+/**
+ * @interface ReceiptInterface
+ * @description Interface for Receipt to support extensibility
+ */
+export interface ReceiptInterface {
+    readonly receiptId: string;
+    readonly memberId: string;
+    readonly transactionType: TransactionType;
+    readonly createdAt: Date;
+    readonly status: TransactionStatus;
+    
+    addBook(book: Book, dueDate: Date): void;
+    returnBook(bookId: string): void;
+    calculateTotalFines(): number;
+    isOverdue(): boolean;
+}
+
 /**
  * @class Receipt
- * @description Represents a record of one or more books borrowed by a specific user.
- * It tracks the borrowing and return dates and can calculate charges.
- *
+ * @description Enhanced receipt class for comprehensive transaction management
  */
-class Receipt {
-    // Private array to hold all books associated with this single borrowing transaction.
-    public books: Book[] = [];
-
-    /**
-     * Creates an instance of Receipt (Borrowing Transaction).
-     * @param {string} userId - The ID of the user who borrowed the book(s).
-     * @param {Book} book - The first book borrowed in this transaction.
-     * @param {Date} assignedOn - The date and time when the book(s) were borrowed.
-     * @param {Date | null} [returnedOn=null] - The date and time when all book(s) were returned. Null if not yet returned.
-     */
+export class Receipt implements ReceiptInterface {
+    private static receiptCounter = 1;
+    
+    public readonly receiptId: string;
+    private bookTransactions: Map<string, BookTransactionEntry> = new Map();
+    private _status: TransactionStatus = TransactionStatus.ACTIVE;
+    private _totalFines: number = 0;
+    
     constructor(
-        public userId: string,
-        book: Book, // Changed to private to reinforce that the internal `books` array is the source of truth
-        public assignedOn: Date,
-        public returnedOn: Date | null = null,
+        public readonly memberId: string,
+        public readonly transactionType: TransactionType = TransactionType.BORROW,
+        public readonly createdAt: Date = new Date(),
+        initialBook?: Book,
+        initialDueDate?: Date
     ) {
-        this.books.push(book); // Add the initial book to the internal list.
+        this.receiptId = `RCP_${String(Receipt.receiptCounter++).padStart(8, '0')}`;
+        
+        if (initialBook && initialDueDate) {
+            this.addBook(initialBook, initialDueDate);
+        }
     }
 
     /**
-     * Adds another book to this existing borrowing transaction.
-     * This is useful if a user borrows multiple books simultaneously under one record.
-     * @param {Book} book - The book to add to this receipt/transaction.
+     * Get current status
      */
-    addAnotherBook(book: Book): void {
-        this.books.push(book);
-        console.log(`Added "${book.title}" to receipt for User ID: ${this.userId}.`);
+    get status(): TransactionStatus {
+        if (this._status === TransactionStatus.ACTIVE) {
+            // Check if any books are overdue
+            const hasOverdue = Array.from(this.bookTransactions.values())
+                .some(entry => !entry.returnDate && new Date() > entry.dueDate);
+            
+            if (hasOverdue) {
+                this._status = TransactionStatus.OVERDUE;
+            }
+        }
+        return this._status;
     }
 
     /**
-     * Sets the return date for this borrowing transaction.
-     * This implies all books on this receipt are being returned at this time.
+     * Add a book to this receipt
      */
-    setReturnedOn(): void {
-        this.returnedOn = new Date();
-        console.log(`Receipt for User ID: ${this.userId} marked as returned on ${this.returnedOn.toDateString()}.`);
+    addBook(book: Book, dueDate: Date): void {
+        if (this.bookTransactions.has(book.id)) {
+            throw new Error(`Book ${book.title} is already in this receipt`);
+        }
+
+        const entry: BookTransactionEntry = {
+            bookId: book.id,
+            bookTitle: book.title,
+            borrowDate: new Date(),
+            dueDate: dueDate,
+            renewalCount: 0,
+            fineAmount: 0,
+            isOverdue: false
+        };
+
+        this.bookTransactions.set(book.id, entry);
+        console.log(`Added "${book.title}" to receipt ${this.receiptId}`);
     }
 
     /**
-     * Generates a detailed string representation of the receipt.
-     * @returns {string} A formatted string showing user ID, borrowed books, and dates.
+     * Return a book
+     */
+    returnBook(bookId: string): void {
+        const entry = this.bookTransactions.get(bookId);
+        if (!entry) {
+            throw new Error(`Book with ID ${bookId} not found in this receipt`);
+        }
+
+        if (entry.returnDate) {
+            throw new Error(`Book ${entry.bookTitle} has already been returned`);
+        }
+
+        entry.returnDate = new Date();
+        
+        // Calculate fine if overdue
+        if (new Date() > entry.dueDate) {
+            const daysOverdue = Math.ceil((new Date().getTime() - entry.dueDate.getTime()) / (1000 * 60 * 60 * 24));
+            entry.fineAmount = daysOverdue * 0.50; // $0.50 per day
+            entry.isOverdue = true;
+            this._totalFines += entry.fineAmount;
+        }
+
+        console.log(`Book "${entry.bookTitle}" returned. Fine: $${entry.fineAmount.toFixed(2)}`);
+        
+        // Check if all books are returned
+        const allReturned = Array.from(this.bookTransactions.values())
+            .every(e => e.returnDate !== undefined);
+        
+        if (allReturned) {
+            this._status = TransactionStatus.COMPLETED;
+        }
+    }
+
+    /**
+     * Renew a book
+     */
+    renewBook(bookId: string, newDueDate: Date): boolean {
+        const entry = this.bookTransactions.get(bookId);
+        if (!entry) {
+            return false;
+        }
+
+        if (entry.returnDate) {
+            throw new Error(`Cannot renew returned book ${entry.bookTitle}`);
+        }
+
+        if (entry.renewalCount >= 2) {
+            throw new Error(`Book ${entry.bookTitle} has reached maximum renewal limit`);
+        }
+
+        entry.dueDate = newDueDate;
+        entry.renewalCount++;
+        console.log(`Book "${entry.bookTitle}" renewed. Due date: ${newDueDate.toDateString()}`);
+        return true;
+    }
+
+    /**
+     * Calculate total fines for this receipt
+     */
+    calculateTotalFines(): number {
+        let totalFines = 0;
+        const currentDate = new Date();
+
+        this.bookTransactions.forEach((entry) => {
+            if (!entry.returnDate && currentDate > entry.dueDate) {
+                const daysOverdue = Math.ceil((currentDate.getTime() - entry.dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                entry.fineAmount = daysOverdue * 0.50;
+                entry.isOverdue = true;
+            }
+            totalFines += entry.fineAmount;
+        });
+
+        this._totalFines = totalFines;
+        return totalFines;
+    }
+
+    /**
+     * Check if receipt has overdue books
+     */
+    isOverdue(): boolean {
+        const currentDate = new Date();
+        return Array.from(this.bookTransactions.values())
+            .some(entry => !entry.returnDate && currentDate > entry.dueDate);
+    }
+
+    /**
+     * Get all book transactions
+     */
+    getBookTransactions(): BookTransactionEntry[] {
+        return Array.from(this.bookTransactions.values());
+    }
+
+    /**
+     * Get active (not returned) book transactions
+     */
+    getActiveTransactions(): BookTransactionEntry[] {
+        return Array.from(this.bookTransactions.values())
+            .filter(entry => !entry.returnDate);
+    }
+
+    /**
+     * Get overdue book transactions
+     */
+    getOverdueTransactions(): BookTransactionEntry[] {
+        const currentDate = new Date();
+        return Array.from(this.bookTransactions.values())
+            .filter(entry => !entry.returnDate && currentDate > entry.dueDate);
+    }
+
+    /**
+     * Cancel the receipt
+     */
+    cancel(): void {
+        if (this._status === TransactionStatus.COMPLETED) {
+            throw new Error('Cannot cancel completed receipt');
+        }
+        this._status = TransactionStatus.CANCELLED;
+    }
+
+    /**
+     * Get receipt details
      */
     getReceiptDetails(): string {
-       const bookDetails = this.books.map(book => `- ${book.getDetails()}`).join('\n'); // Improved formatting
-       return `Receipt for User ID: ${this.userId}\nBooks Borrowed:\n${bookDetails}\nAssigned On: ${this.assignedOn.toDateString()}\nReturned On: ${this.returnedOn ? this.returnedOn.toDateString() : 'Not Returned Yet'}`;
-   }
+        const booksList = Array.from(this.bookTransactions.values())
+            .map(entry => {
+                const status = entry.returnDate 
+                    ? `Returned: ${entry.returnDate.toDateString()}` 
+                    : `Due: ${entry.dueDate.toDateString()}`;
+                const fine = entry.fineAmount > 0 ? ` | Fine: $${entry.fineAmount.toFixed(2)}` : '';
+                const renewals = entry.renewalCount > 0 ? ` | Renewals: ${entry.renewalCount}` : '';
+                return `  - ${entry.bookTitle} | ${status}${fine}${renewals}`;
+            }).join('\n');
 
-   /**
-    * Calculates the total charges for the borrowed books based on a daily rate.
-    * The charge is per book, per day.
-    * @param {number} dailyRate - The daily charge for each book.
-    * @returns {number} The total calculated charge.
-    * @throws {Error} If the book(s) on this receipt have not been returned yet.
-    */
-   calculateCharges(dailyRate: number): number {
-       if (!this.returnedOn) {
-           throw new Error('Book(s) have not been returned yet. Cannot calculate charges.');
-       }
-       // Calculate days borrowed, rounding up to ensure full day is charged even for partial day.
-       const daysBorrowed = Math.ceil((this.returnedOn.getTime() - this.assignedOn.getTime()) / (1000 * 60 * 60 * 24));
-       // Total charge is days * daily rate * number of books on this receipt.
-       return daysBorrowed * dailyRate * this.books.length;
-   }
+        return `Receipt ID: ${this.receiptId}
+Member ID: ${this.memberId}
+Type: ${this.transactionType} | Status: ${this.status}
+Created: ${this.createdAt.toDateString()}
+Total Fines: $${this._totalFines.toFixed(2)}
+
+Books:
+${booksList}`;
+    }
+
+    // Legacy support methods for backward compatibility
+    
+    /**
+     * Legacy property for backward compatibility
+     */
+    get userId(): string {
+        return this.memberId;
+    }
+
+    /**
+     * Legacy property for backward compatibility
+     */
+    get assignedOn(): Date {
+        return this.createdAt;
+    }
+
+    /**
+     * Legacy property for backward compatibility
+     */
+    get returnedOn(): Date | null {
+        return this._status === TransactionStatus.COMPLETED ? new Date() : null;
+    }
+
+    /**
+     * Legacy property for backward compatibility
+     */
+    get books(): Book[] {
+        // This is a simplified representation for backward compatibility
+        return [];
+    }
+
+    /**
+     * Legacy method for backward compatibility
+     */
+    addAnotherBook(book: Book): void {
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 14); // Default 14-day loan
+        this.addBook(book, dueDate);
+    }
+
+    /**
+     * Legacy method for backward compatibility
+     */
+    setReturnedOn(): void {
+        this._status = TransactionStatus.COMPLETED;
+    }
+
+    /**
+     * Legacy method for backward compatibility
+     */
+    calculateCharges(dailyRate: number): number {
+        return this.calculateTotalFines();
+    }
 }

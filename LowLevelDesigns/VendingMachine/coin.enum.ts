@@ -1,6 +1,6 @@
-enum coin {
-    PENNY = 1,
-    NICKEL = 5,
-    DIME = 10,
-    QUARTER = 25
+enum Coin {
+    DOLLAR = 100, // $1.00
+    QUARTER = 25, // $0.25
+    DIME = 10,    // $0.10
+    NICKEL = 5    // $0.05
 }

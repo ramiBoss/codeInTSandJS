@@ -1,0 +1,22 @@
+const InsertInterval = (intervals: number[][], newInterval: number[]): number[][] => {
+    const result: number[][] = [];
+    let i = 0;
+
+    // Add all intervals ending before newInterval starts
+    while (i < intervals.length && newInterval[0] &&  intervals[i]![1] && intervals[i]![1]! < newInterval[0]) {
+        result.push(intervals[i]!);
+        i++;
+    }
+    while (i < intervals.length && intervals[i]![0]! <= newInterval[1]!) {
+        newInterval[0] = Math.min(newInterval[0]!, intervals[i]![0]!);
+        newInterval[1] = Math.max(newInterval[1]!, intervals[i]![1]!);
+        i++;
+    }
+    result.push(newInterval);
+    // Add all remaining intervals
+    while (i < intervals.length) {
+        result.push(intervals[i]!);
+        i++;
+    }
+    return result;
+};

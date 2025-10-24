@@ -1,4 +1,6 @@
-class Inventory {  
+import { Product } from "./Product";
+
+export class Inventory {  
     private products: Map<string, { product: Product; quantity: number }> = new Map();
 
     /**

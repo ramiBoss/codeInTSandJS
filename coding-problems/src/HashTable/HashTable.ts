@@ -14,7 +14,7 @@ export class HashTable<K, V> {
     private capacity: number;
 
     constructor(capacity: number = 16) {
-        this.table = new Array(capacity).fill(null).map(() => []);
+        this.table = Array.from({ length: capacity }, () => []);
         this.size = 0;
         this.capacity = capacity;
     }
@@ -31,6 +31,9 @@ export class HashTable<K, V> {
 
     public insert(key: K, value: V): void {
         const index = this.hash(key);
+        if (!this.table[index]) {
+            this.table[index] = [];
+        }
         const bucket = this.table[index];
         
         // Check if key already exists
@@ -42,17 +45,17 @@ export class HashTable<K, V> {
             this.size++;
         }
     }
-
     public get(key: K): V | undefined {
         const index = this.hash(key);
         const bucket = this.table[index];
+        if (!bucket) return undefined;
         const pair = bucket.find(pair => pair[0] === key);
         return pair ? pair[1] : undefined;
     }
-
     public remove(key: K): boolean {
         const index = this.hash(key);
         const bucket = this.table[index];
+        if (!bucket) return false;
         const pairIndex = bucket.findIndex(pair => pair[0] === key);
         
         if (pairIndex !== -1) {
@@ -62,10 +65,10 @@ export class HashTable<K, V> {
         }
         return false;
     }
-
     public contains(key: K): boolean {
         const index = this.hash(key);
-        return this.table[index].some(pair => pair[0] === key);
+        const bucket = this.table[index];
+        return bucket ? bucket.some(pair => pair[0] === key) : false;
     }
 
     public getSize(): number {
@@ -77,4 +80,6 @@ export class HashTable<K, V> {
         this.size = 0;
     }
 }
+
+
 

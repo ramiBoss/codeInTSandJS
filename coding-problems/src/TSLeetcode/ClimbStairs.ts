@@ -51,8 +51,8 @@ const ClimbStairsDP = (n: number): number => {
     dp[1] = 1;
 
     for (let i = 2; i <= n; i++) {
-        dp[i] = dp[i - 1] + dp[i - 2];
+        dp[i] = (dp[i - 1] as number) + (dp[i - 2] as number);
     }
 
-    return dp[n];
+    return dp[n] as number;
 };
